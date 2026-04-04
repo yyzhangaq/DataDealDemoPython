@@ -1,0 +1,75 @@
+# ---------------------------------------------------------
+# 核心版本控制
+# ---------------------------------------------------------
+version = "1.0"
+
+# ---------------------------------------------------------
+# [metadata] 元数据：用于数据治理和难度分级
+# ---------------------------------------------------------
+[metadata]
+author_name = "Benchmark Engineer"
+author_email = "benchmark@example.com"
+
+# 难度分级：easy (入门), medium (进阶), hard (专家)
+difficulty = "medium"
+
+# 任务类别
+category = "data-engineering"
+
+# 标签：用于后续筛选
+tags = ["python", "cli", "csv", "data-cleaning", "text-processing"]
+
+# 【关键指标】专家解决这个问题需要多少分钟
+expert_time_estimate_min = 25.0
+
+# 【关键指标】初级工程师解决这个问题需要多少分钟
+junior_time_estimate_min = 90.0
+
+# ---------------------------------------------------------
+# [task] 任务描述
+# ---------------------------------------------------------
+[task]
+id = "csv-cleaner-cli"
+name = "CSV Data Cleaner CLI"
+description = "Build a Python CLI tool to clean messy CSV data: remove empty rows, trim whitespace, deduplicate, normalize dates, handle encoding issues, and fix column misalignment."
+language = "python"
+python_version = "3.11"
+
+# ---------------------------------------------------------
+# [evaluation] 评分标准与权重
+# ---------------------------------------------------------
+[evaluation]
+type = "script"
+entry = "tests/test.sh"
+
+# 加权评分维度
+[evaluation.scoring]
+basic_cleaning = { weight = 30, description = "Empty rows removal, whitespace trimming, deduplication" }
+encoding_handling = { weight = 20, description = "BOM removal, non-printable character stripping" }
+format_normalization = { weight = 20, description = "Date format normalization to ISO 8601" }
+structural_repair = { weight = 15, description = "Column count alignment, malformed row handling" }
+cli_correctness = { weight = 15, description = "Exit codes, file I/O, argument handling" }
+
+# ---------------------------------------------------------
+# [verifier] 验证器配置：控制判题脚本的运行
+# ---------------------------------------------------------
+[verifier]
+timeout_sec = 600.0
+
+# ---------------------------------------------------------
+# [agent] Agent 配置：控制 AI 的思考和执行时间
+# ---------------------------------------------------------
+[agent]
+timeout_sec = 2400.0
+
+# ---------------------------------------------------------
+# [environment] 环境配置：Docker 容器的资源限制
+# ---------------------------------------------------------
+[environment]
+build_timeout_sec = 600.0
+docker_image = "custom-bench/csv-cleaner-cli:v1"
+dockerfile = "environment/Dockerfile"
+initial_files = ["environment/dirty_data.csv"]
+cpus = 1
+memory = "2G"
+storage = "10G"
