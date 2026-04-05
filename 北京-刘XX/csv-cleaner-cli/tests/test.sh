@@ -1,60 +1,74 @@
 #!/bin/bash
 # Test entry script for CSV Cleaner CLI
+# Runs in CLEAN Linux environment — only bash + docker available on host
+# All Python logic executes INSIDE Docker container
 # Returns exit code 0 if all tests pass, 1 if any test fails
+
+set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
-
-cd "$PROJECT_DIR"
+IMAGE_NAME="csv-cleaner-cli"
+CONTAINER_NAME="csv-cleaner-test-$$"
 
 echo "============================================================"
-echo "Setting up test environment..."
+echo "CSV Cleaner CLI — Docker Test Runner"
 echo "============================================================"
-
-# Copy dirty data to working directory if not present
-if [ ! -f "dirty_data.csv" ]; then
-    if [ -f "environment/dirty_data.csv" ]; then
-        cp environment/dirty_data.csv ./dirty_data.csv
-        echo "Copied dirty_data.csv from environment/"
-    else
-        echo "Error: dirty_data.csv not found in environment/"
-        exit 1
-    fi
-fi
-
-# Check if cleaner.py exists (AI should have created it)
-if [ ! -f "cleaner.py" ]; then
-    echo "Error: cleaner.py not found in project root"
-    echo "The AI should create cleaner.py that reads dirty_data.csv and outputs cleaned_data.csv"
-    exit 1
-fi
-
-echo "Running cleaner.py..."
 echo ""
 
-# Run the cleaner — capture exit code without set -e
-python3 cleaner.py
-CLEANER_EXIT=$?
+echo "[Step 1/3] Building Docker image..."
+echo "------------------------------------------------------------"
 
-if [ $CLEANER_EXIT -ne 0 ]; then
-    echo ""
-    echo "Error: cleaner.py exited with code $CLEANER_EXIT"
+if [ ! -f "$PROJECT_DIR/environment/Dockerfile" ]; then
+    echo "Error: Dockerfile not found at $PROJECT_DIR/environment/Dockerfile"
     exit 1
 fi
 
-# Check if output was created
-if [ ! -f "cleaned_data.csv" ]; then
-    echo ""
-    echo "Error: cleaned_data.csv was not created by cleaner.py"
+docker build -t "$IMAGE_NAME" -f "$PROJECT_DIR/environment/Dockerfile" "$PROJECT_DIR"
+
+BUILD_EXIT=$?
+if [ $BUILD_EXIT -ne 0 ]; then
+    echo "Error: docker build failed with exit code $BUILD_EXIT"
     exit 1
 fi
 
 echo ""
-echo "Running validation tests..."
+echo "✓ Docker image built successfully"
 echo ""
 
-# Run the test logic
-python3 tests/test_logic.py
+echo "[Step 2/3] Running cleaner.py inside container..."
+echo "[Step 3/3] Running validation tests inside container..."
+echo "------------------------------------------------------------"
+echo "(Both steps run in the same container so cleaned_data.csv persists)"
+echo ""
+
+docker run --rm \
+    --name "$CONTAINER_NAME" \
+    "$IMAGE_NAME" \
+    bash -c "
+        echo '--- Running cleaner.py ---'
+        python3 /app/cleaner.py
+        CLEANER_EXIT=\$?
+        if [ \$CLEANER_EXIT -ne 0 ]; then
+            echo 'Error: cleaner.py exited with code '\$CLEANER_EXIT
+            exit 1
+        fi
+        echo ''
+        echo '--- Running test_logic.py ---'
+        python3 /app/test_logic.py
+    "
+
 TEST_EXIT=$?
+
+echo ""
+if [ $TEST_EXIT -eq 0 ]; then
+    echo "============================================================"
+    echo "RESULT: ALL TESTS PASSED ✅"
+    echo "============================================================"
+else
+    echo "============================================================"
+    echo "RESULT: SOME TESTS FAILED ❌"
+    echo "============================================================"
+fi
 
 exit $TEST_EXIT

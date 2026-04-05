@@ -292,17 +292,12 @@ def run_tests(cleaned_file: str, dirty_file: str, expected_file: str) -> tuple:
 
 
 def main():
-    """Main test entry point."""
-    script_dir = Path(__file__).parent
-    project_dir = script_dir.parent
+    """Main test entry point — runs inside Docker at /app/"""
+    app_dir = "/app"
 
-    cleaned_file = project_dir / "cleaned_data.csv"
-    dirty_file = project_dir / "dirty_data.csv"
-    expected_file = project_dir / "solution" / "expected_output.csv"
-
-    # Fallback to environment directory for dirty data
-    if not dirty_file.exists():
-        dirty_file = project_dir / "environment" / "dirty_data.csv"
+    cleaned_file = os.path.join(app_dir, "cleaned_data.csv")
+    dirty_file = os.path.join(app_dir, "dirty_data.csv")
+    expected_file = os.path.join(app_dir, "expected_output.csv")
 
     print("=" * 60)
     print("CSV Cleaner CLI — Test Suite")
