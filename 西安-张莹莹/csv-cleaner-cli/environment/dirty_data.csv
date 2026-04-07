@@ -1,0 +1,36 @@
+name,email,age
+Alice Zhang,alice.zhang@example.com,28
+Bob Li,bob.li@example.com,35
+Carol Wang,carol@example.com,invalid
+David Chen,david@example.com,-5
+Alice Zhang,alice.zhang@example.com,28
+David Chen,david@example.com,25
+Eve Luo,eve.luo@example.com,100
+,invalid.email.com,30
+Frank Gao,,30
+Grace Liu,grace@example.com,
+Henry Sun,henry@example.com,200
+,mixed spaces@test.com,25
+Ivy Jia,ivy@test.com,0
+Jack Kong,jack.kong@test.com,29
+, , ,
+Kate Lin,kate.lin@test.com,33
+Leo Meng,leo@example.com,45
+,missing.fields@test.com,
+Mark Xu,mark@example.com,38
+Nancy He,nancy@example.com,29
+Oscar Yang,oscar@example.com,42
+  Tom Wang  ,tom.wang@example.com,31
+Jim Chen,jim.chen@example.com,invalid
+Lily Gao,,25
+Kevin Li,kevin@example.com,-1
+, , ,
+  Anna Zhang  ,anna.zhang@EXAMPLE.COM,27
+Brian Liu,brian@example.com,200
+Emma Chen,emma@example.com,1
+,no.name@test.com,
+Frank Lee,FRANK.LEE@TEST.COM,33
+Grace Wu,grace.wu@example.com,45
+, , ,
+Henry Sun,henry.sun@example.com,999
+Ivan Chen,ivan.chen@example.com,abc
