@@ -113,7 +113,7 @@ run_output=$(docker run --rm \
     -v "$PROJECT_ROOT:/workspace" \
     -w /workspace \
     csv-cleaner-task:latest \
-    python3 cleaner.py 2>&1)
+    python3 solution/cleaner.py environment/dirty_data.csv cleaned_data.csv 2>&1)
 
 run_exit=$?
 
@@ -151,7 +151,7 @@ test_output=$(docker run --rm \
     -v "$PROJECT_ROOT:/workspace" \
     -w /workspace \
     csv-cleaner-task:latest \
-    python3 tests/test_logic.py 2>&1)
+    python3 tests/test_logic.py cleaned_data.csv 2>&1)
 
 test_exit=$?
 
