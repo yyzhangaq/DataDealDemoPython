@@ -42,16 +42,6 @@ handle_error() {
     exit 1
 }
 
-# 清理函数（可选）
-cleanup() {
-    # 如果有临时文件需要清理，在这里添加
-    log_info "Cleaning up..."
-    # rm -f /tmp/some_temp_file
-}
-
-# 设置退出时的清理钩子
-trap cleanup EXIT
-
 # ============================================================
 # 开始测试
 # ============================================================
@@ -157,7 +147,7 @@ test_exit=$?
 
 if [ $test_exit -ne 0 ]; then
     log_error "Validation tests failed with exit code: $test_exit"
-    echo "$test_output" | tail -30
+    echo "$test_outpuFt" | tail -30
     handle_error "Validation tests failed"
 fi
 

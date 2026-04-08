@@ -1,16 +1,15 @@
-FROM python:3.11.9-slim-bookworm
+FROM python:3.11.9-slim
 
-# 只安装必要的系统包（不装 pandas/pytest 等，除非必须）
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         bash \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /workspace
+WORKDIR /app
 
-# 不在这里ADD代码，运行时通过 -v 挂载
+ADD solution/cleaner.py /app/cleaner.py
+ADD environment/dirty_data.csv /data/dirty_data.csv
 
-# 设置环境变量
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
