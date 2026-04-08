@@ -1,11 +1,17 @@
-FROM python:3.11.4-slim
+FROM python:3.11.9-slim-bookworm
 
-WORKDIR /data
+# 只安装必要的系统包（不装 pandas/pytest 等，除非必须）
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        bash \
+    && rm -rf /var/lib/apt/lists/*
 
-COPY environment/dirty_data.csv /data/dirty_data.csv
-COPY solution/cleaner.py /data/cleaner.py
-COPY tests/test_logic.py /data/test_logic.py
+WORKDIR /workspace
 
-RUN chmod +x /data/cleaner.py /data/test_logic.py
+# 不在这里ADD代码，运行时通过 -v 挂载
 
-CMD ["python3", "/data/cleaner.py", "/data/dirty_data.csv", "/data/cleaned_data.csv"]
+# 设置环境变量
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+CMD ["bash"]
