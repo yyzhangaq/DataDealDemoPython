@@ -55,7 +55,6 @@ log_info "=========================================="
 # ============================================================
 log_step "Step 1/5: Checking required files..."
 
-# 定义必要文件列表
 required_files=(
     "environment/Dockerfile"
     "environment/dirty_data.csv"
@@ -76,7 +75,6 @@ log_info "All required files exist"
 # ============================================================
 log_step "Step 2/5: Building Docker image..."
 
-# 构建镜像，捕获输出
 build_output=$(docker build -f environment/Dockerfile -t csv-cleaner-task:latest . 2>&1)
 build_exit=$?
 
@@ -93,7 +91,6 @@ log_info "Docker image built successfully"
 # ============================================================
 log_step "Step 3/5: Running cleaner.py to process dirty data..."
 
-# 检查是否有旧的输出文件，如果有则删除（确保是本次生成的）
 if [ -f "cleaned_data.csv" ]; then
     rm -f "cleaned_data.csv"
     log_info "Removed existing cleaned_data.csv"
@@ -101,9 +98,9 @@ fi
 
 run_output=$(docker run --rm \
     -v "$PROJECT_ROOT:/workspace" \
-    -w /workspace \
+    -w /data \
     csv-cleaner-task:latest \
-    python3 solution/cleaner.py environment/dirty_data.csv cleaned_data.csv 2>&1)
+    python3 cleaner.py dirty_data.csv /workspace/cleaned_data.csv 2>&1)
 
 run_exit=$?
 
@@ -124,7 +121,6 @@ if [ ! -f "cleaned_data.csv" ]; then
     handle_error "cleaned_data.csv was not created by cleaner.py"
 fi
 
-# 检查文件是否为空
 if [ ! -s "cleaned_data.csv" ]; then
     handle_error "cleaned_data.csv is empty"
 fi
@@ -147,7 +143,7 @@ test_exit=$?
 
 if [ $test_exit -ne 0 ]; then
     log_error "Validation tests failed with exit code: $test_exit"
-    echo "$test_outpuFt" | tail -30
+    echo "$test_output" | tail -30
     handle_error "Validation tests failed"
 fi
 

@@ -5,9 +5,9 @@ RUN apt-get update && \
         bash \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+WORKDIR /data
 
-ADD solution/cleaner.py /app/cleaner.py
+ADD solution/cleaner.py /data/cleaner.py
 ADD environment/dirty_data.csv /data/dirty_data.csv
 
 ENV PYTHONUNBUFFERED=1
